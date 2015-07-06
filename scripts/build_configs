@@ -1,0 +1,20 @@
+#!/usr/bin/python -u
+import os, json, pystache
+
+carbon_config = {
+  'replication_factor': 1,
+  'cache_hosts': ''
+}
+
+carbon_config_json = json.loads(os.environ['CARBON_CONFIG'])
+if 'replication_factor' in carbon_config_json:
+  carbon_config['replication_factor'] = carbon_config_json['replication_factor']
+if 'cache_hosts' in carbon_config_json:
+  carbon_config['cache_hosts'] = ', '.join(carbon_config_json['cache_hosts'])
+
+with open ("/opt/graphite/conf/carbon.conf.mustache", "r") as carbon_config_template:
+  with open ("/opt/graphite/conf/carbon.conf", "w") as carbon_config_out:
+    data = carbon_config_template.read()
+    carbon_config_out.write(pystache.render(data, carbon_config))
+
+execfile('/sbin/my_init')

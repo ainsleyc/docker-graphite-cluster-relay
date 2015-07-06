@@ -30,11 +30,14 @@ RUN chmod 644 /etc/logrotate.d/graphite
 # daemons
 ADD daemons/carbon-relay.sh /etc/service/carbon-relay/run
 
+# scripts
+ADD scripts/build_configs /sbin/build_configs
+
 # cleanup
 RUN apt-get clean\
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # defaults
-EXPOSE 80:80 2003:2003
+EXPOSE 2003:2003 2004:2004
 ENV HOME /root
-CMD ["/sbin/my_init"]
+CMD ["/sbin/build_configs"]
