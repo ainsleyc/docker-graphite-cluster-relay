@@ -15,7 +15,7 @@ if 'replication_factor' in carbon_config_json:
   carbon_config['replication_factor'] = carbon_config_json['replication_factor']
 if 'cache_hosts' in carbon_config_json:
   carbon_config['cache_hosts'] = carbon_config_json['cache_hosts']
-  
+
 host_list = []
 for host in carbon_config["cache_hosts"]:
   if len(host["ports"]) > 0:
@@ -27,6 +27,9 @@ for host in carbon_config["cache_hosts"]:
   carbon_config['cache_hosts_string'] = ', '.join(host_list)
   print carbon_config['cache_hosts_string']
 
+print "CARBON_CONFIG:"
+print json.dumps(carbon_config, sort_keys=True, indent=2, separators=(',', ':'))
+
 with open ("/opt/graphite/conf/carbon.conf.mustache", "r") as carbon_config_template:
   with open ("/opt/graphite/conf/carbon.conf", "w") as carbon_config_out:
     data = carbon_config_template.read()
@@ -37,4 +40,4 @@ with open ("/opt/graphite/conf/relay-rules.conf.mustache", "r") as relay_rules_t
     data = relay_rules_template.read()
     relay_rules_out.write(pystache.render(data, carbon_config))
 
-#execfile('/sbin/my_init')
+execfile('/sbin/my_init')
