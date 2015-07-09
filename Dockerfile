@@ -38,6 +38,5 @@ RUN apt-get clean\
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # defaults
-EXPOSE 2003:2003 2004:2004
 ENV HOME /root
 CMD ["/sbin/build_configs"]

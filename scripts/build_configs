@@ -3,18 +3,32 @@ import os, json, pystache
 
 carbon_config = {
   'replication_factor': 1,
-  'cache_hosts': ''
+  'cache_hosts': [{ 
+    'host': '127.0.0.1',
+    'cache_count': 1
+  }]
 }
 
-carbon_config_json = json.loads(os.environ['CARBON_CONFIG'])
+carbon_config_json = json.loads(os.getenv('CARBON_CONFIG', '{}'))
 if 'replication_factor' in carbon_config_json:
   carbon_config['replication_factor'] = carbon_config_json['replication_factor']
 if 'cache_hosts' in carbon_config_json:
-  carbon_config['cache_hosts'] = ', '.join(carbon_config_json['cache_hosts'])
+  carbon_config['cache_hosts'] = carbon_config_json['cache_hosts']
+  
+host_list = []
+for host in carbon_config["cache_hosts"]:
+  for x in range(0, host["cache_count"]):
+    host_list.append(host["host"] + ":" + str(2014 + (x*10)) + ":" + str(x))
+carbon_config['cache_hosts_string'] = ', '.join(host_list)
 
 with open ("/opt/graphite/conf/carbon.conf.mustache", "r") as carbon_config_template:
   with open ("/opt/graphite/conf/carbon.conf", "w") as carbon_config_out:
     data = carbon_config_template.read()
     carbon_config_out.write(pystache.render(data, carbon_config))
+
+with open ("/opt/graphite/conf/relay-rules.conf.mustache", "r") as relay_rules_template:
+  with open ("/opt/graphite/conf/relay-rules.conf", "w") as relay_rules_out:
+    data = relay_rules_template.read()
+    relay_rules_out.write(pystache.render(data, carbon_config))
 
 execfile('/sbin/my_init')

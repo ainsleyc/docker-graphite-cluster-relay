@@ -259,7 +259,7 @@ REPLICATION_FACTOR = {{ replication_factor }}
 #
 # If using RELAY_METHOD = rules, all destinations used in relay-rules.conf
 # must be defined in this list
-DESTINATIONS = {{ cache_hosts }}
+DESTINATIONS = {{ cache_hosts_string }}
 
 # This defines the maximum "message size" between carbon daemons.
 # You shouldn't need to tune this unless you really know what you're doing.
