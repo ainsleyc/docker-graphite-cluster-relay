@@ -5,7 +5,8 @@ carbon_config = {
   'replication_factor': 1,
   'cache_hosts': [{ 
     'host': '127.0.0.1',
-    'cache_count': 1
+    'cache_count': 1,
+    'ports': []
   }]
 }
 
@@ -17,9 +18,14 @@ if 'cache_hosts' in carbon_config_json:
   
 host_list = []
 for host in carbon_config["cache_hosts"]:
-  for x in range(0, host["cache_count"]):
-    host_list.append(host["host"] + ":" + str(2014 + (x*10)) + ":" + str(x))
-carbon_config['cache_hosts_string'] = ', '.join(host_list)
+  if len(host["ports"]) > 0:
+    for x in range(0, len(host["ports"])):
+      host_list.append(host["host"] + ":" + str(host["ports"][x]) + ":" + str(x))
+  else:
+    for x in range(0, host["cache_count"]):
+      host_list.append(host["host"] + ":" + str(2014 + (x*10)) + ":" + str(x))
+  carbon_config['cache_hosts_string'] = ', '.join(host_list)
+  print carbon_config['cache_hosts_string']
 
 with open ("/opt/graphite/conf/carbon.conf.mustache", "r") as carbon_config_template:
   with open ("/opt/graphite/conf/carbon.conf", "w") as carbon_config_out:
@@ -31,4 +37,4 @@ with open ("/opt/graphite/conf/relay-rules.conf.mustache", "r") as relay_rules_t
     data = relay_rules_template.read()
     relay_rules_out.write(pystache.render(data, carbon_config))
 
-execfile('/sbin/my_init')
+#execfile('/sbin/my_init')
